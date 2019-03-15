@@ -56,7 +56,7 @@ public class Quick{
     int start = 0;
     int end = pivot -1;
 
-    while(pivot != val){
+    while(pivot != val){ // if its not at the wanted val, keep going
       pivot = partition(data, start, end); // partition the array
       if(pivot < val){
         end = pivot -1; // move the end if pivot is less than k
@@ -66,6 +66,10 @@ public class Quick{
     }
     return data[pivot];
 
+  }
+
+  public static void quickSort(int[] data){
+    quickSortHelper(data,0,data.length);
   }
 
   public static void quickSortHelper(int[] data, int lo, int hi){
