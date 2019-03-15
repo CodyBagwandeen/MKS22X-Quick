@@ -2,11 +2,6 @@
 
 public class Quick{
 
-  public static int quickSelect(int[] data, int k){
-    return 0;
-
-  }
-
   public static int partition(int[] data, int start, int end){
     if(start < 0 || end > data.length){
       return start;
@@ -50,6 +45,27 @@ public class Quick{
     int temp = data[a];
     data[a] = data[b];
     data[b] = temp;
+  }
+
+  public static int quickSelect(int[] data, int val){
+    if( val >= data.length){
+      throw new IllegalArgumentException("Must be a valid index");
+    }
+
+    int pivot = data.length;
+    int start = 0;
+    int end = pivot -1;
+
+    while(pivot != val){
+      pivot = partition(data, start, end); // partition the array
+      if(pivot < val){
+        end = pivot -1; // move the end if pivot is less than k
+      } else {
+        start = pivot +1; // move the start
+      }
+    }
+    return data[pivot];
+
   }
 
   public static void quickSortHelper(int[] data, int lo, int hi){
