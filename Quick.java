@@ -14,8 +14,36 @@ public class Quick{
     int pivotIndex = (int)(Math.random() * 10000 ) % data.length;
     int pivot = data[pivotIndex];
 
+    swap(data, pivotIndex, start); // swap the pivot and the start
+    pivotIndex = start;            // move the pivotIndex to the start
+    start++;
+
+    while(start != end){
+      int currnet = data[start];
+
+      if( current < pivot){ // if smaller than pivot, stay
+        start++;
+      } else if( current > pivot){ // if bigger, move to the other end
+        swap(data, start, end);
+        end--;
+      }else{ // first optimization
+        if( Math.random() * 10000 % 2 == 0){ // 50 50 chance of sending it to either side, if its equal to the pivot
+          swap(data, start, end);
+          end--;
+        } else{
+          start++;
+        }
+      }
+    }
+
     return pivot;
 
+  }
+
+  public static void swap(int[] data, int a, int b){
+    int temp = data[a];
+    data[a] = data[b];
+    data[b] = temp;
   }
 
   public static void quickSortHelper(int[] data, int lo, int hi){
