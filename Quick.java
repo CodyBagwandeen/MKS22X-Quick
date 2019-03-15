@@ -19,7 +19,7 @@ public class Quick{
     start++;
 
     while(start != end){
-      int currnet = data[start];
+      int current = data[start];
 
       if( current < pivot){ // if smaller than pivot, stay
         start++;
@@ -36,7 +36,13 @@ public class Quick{
       }
     }
 
-    return pivot;
+    if(pivot > data[start]){
+      swap(data, pivotIndex, start);
+      return start;
+    }else{
+      swap(data, pivotIndex, start -1);
+      return start -1;
+    }
 
   }
 
