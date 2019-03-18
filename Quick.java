@@ -1,107 +1,146 @@
 import java.util.Arrays;
+import java.util.Random;
 
+public class Quick {
+    private static Random random = new Random();
 
-public class Quick{
-
-  public static int partition(int[] data, int start, int end){
-    int pivotIndex = (int)(Math.random() * 10000 ) % data.length;
-    int pivot = data[pivotIndex];
-
-    swap(data, pivotIndex, start); // swap the pivot and the start
-    pivotIndex = start;            // move the pivotIndex to the start
-    start++;
-
-    while(start != end){
-      int current = data[start];
-
-      if( current < pivot){ // if smaller than pivot, stay
-        start++;
-      } else if( current > pivot){ // if bigger, move to the other end
-        swap(data, start, end);
-        end--;
-      }else{ // first optimization
-        if( Math.random() * 10000 % 2 == 0){ // 50 50 chance of sending it to either side, if its equal to the pivot
-          swap(data, start, end);
-          end--;
-        } else{
-          start++;
+    public static void main(String[]args){
+        System.out.println("Size\t\tMax Value\tquick/builtin ratio ");
+        int[]MAX_LIST = {1_000_000_000,500,10};
+        for(int MAX : MAX_LIST){
+            for(int size = 31250; size < 2000001; size*=2){
+                long qtime=0;
+                long btime=0;
+                //average of 5 sorts.
+                for(int trial = 0 ; trial <=5; trial++){
+                    int []data1 = new int[size];
+                    int []data2 = new int[size];
+                    for(int i = 0; i < data1.length; i++){
+                        data1[i] = (int)(Math.random()*MAX);
+                        data2[i] = data1[i];
+                    }
+                    long t1,t2;
+                    t1 = System.currentTimeMillis();
+                    Quick.quicksort(data2);
+                    t2 = System.currentTimeMillis();
+                    qtime += t2 - t1;
+                    t1 = System.currentTimeMillis();
+                    Arrays.sort(data1);
+                    t2 = System.currentTimeMillis();
+                    btime+= t2 - t1;
+                    if(!Arrays.equals(data1,data2)){
+                        System.out.println("FAIL TO SORT!");
+                        System.exit(0);
+                    }
+                }
+                System.out.println(size +"\t\t"+MAX+"\t"+1.0*qtime/btime);
+            }
+            System.out.println();
         }
-      }
     }
 
-    if(pivot > data[start]){
-      swap(data, pivotIndex, start);
-      return start;
-    }else{
-      swap(data, pivotIndex, start -1);
-      return start -1;
+    public static int quickselect(int[] data, int k){
+        if(k >= data.length){
+            throw new IllegalArgumentException("k must be within array");
+        }
+
+        int pivot = data.length;
+        int start = 0;
+        int end = data.length - 1; // inclusive
+
+        while(pivot != k){
+            pivot = partition(data, start, end);
+            if(pivot > k){
+                end = pivot - 1;
+            }else if(pivot < k){
+		              start = pivot + 1;
+            }
+        }
+
+        return data[pivot];
     }
 
-  }
-
-  public static void swap(int[] data, int a, int b){
-    int temp = data[a];
-    data[a] = data[b];
-    data[b] = temp;
-  }
-
-  public static int quickSelect(int[] data, int val){
-    if( val >= data.length){
-      throw new IllegalArgumentException("Must be a valid index");
+    public static void quicksort(int[] data){
+        //calls helper function
+        quicksortHelper(data, 0, data.length -1);
     }
 
-    int pivot = data.length;
-    int start = 0;
-    int end = pivot -1;
-
-    while(pivot != val){ // if its not at the wanted val, keep going
-      System.out.println("");
-      System.out.println("start : " + start);
-      System.out.println("end : " + end);
-      System.out.println(pivot = partition(data, start, end)); // partition the array
-      System.out.println(Arrays.toString(data));
-      System.out.println("pivot : "+ pivot );
-      System.out.println("val : "+val);
-      if(pivot < val){
-        System.out.println("the pivot is less than the value");
-        start = pivot +1; // move the start if pivot is less than k
-      } else {
-        System.out.println("the pivot is more than the value");
-        end = pivot -1; // move the end
-      }
+    private static void quicksortHelper(int[] data, int start, int end){
+        if(end <= start){
+            return;
+        }else{
+            int pivot = partition(data, start, end);
+            // recursion on both sides
+            quicksortHelper(data, start, pivot - 1);
+            quicksortHelper(data, pivot + 1, end);
+        }
     }
-    return data[pivot];
 
-  }
+    public static int partition(int[] data, int start, int end){
+        if(end == start || end <= 0){
+            return start;
+        }
 
-  public static void quickSort(int[] data){
-    quickSortHelper(data,0,data.length);
-  }
+        int pivotIndex = getPivot(data, start, end);
+        int pivot = data[pivotIndex];
 
-  public static void quickSortHelper(int[] data, int lo, int hi){
-    if( lo >= hi){
-      return;
+        swap(data, pivotIndex, start);
+        pivotIndex = start;
+        start++;
+
+        while(start != end){
+            int current = data[start];
+            if(current < pivot){
+                start++;
+            }else if(current > pivot){
+                swap(data, start, end);
+                end--;
+            }else{
+                if(random.nextInt(2) == 0){
+                    swap(data, start, end);
+                    end--;
+                }else{
+                    start++;
+                }
+            }
+        }
+
+        if(pivot > data[start]){
+            swap(data, pivotIndex, start);
+            return start;
+        }else{
+            swap(data, pivotIndex, start - 1);
+            return start - 1;
+        }
     }
-    int pivot = partition(data,lo,hi);
-    quickSortHelper(data, pivot -1, hi);
-    quickSortHelper(data, lo, pivot +1);
 
-  }
+    private static void swap(int[] data, int a, int b){
+        int temp = data[a];
+        data[a] = data[b];
+        data[b] = temp;
+    }
 
-  public static void main(String[] args){
+    public static int getPivot(int[] data, int lo, int hi) {
+            int start = data[lo];
+            int middle = data[(lo + hi) / 2];
+            int end = data[hi];
 
-    System.out.println("Array a");
-    int[] a = {4,6,1,3,5,8};
-    System.out.println(Arrays.toString(a));
-    System.out.println("");
+            if ((start <= middle) && (middle <= end)){
+            return (lo + hi) / 2;
+            }
+            if ((start <= end) && (end <= middle)){
+            return hi;
+            }
+            if ((middle <= start) && (start <= end)){
+            return lo;
+            }
+            if ((middle <= end) && (end <= start)){
+            return hi;
+            }
+            if ((end <= start) && (start <= middle)){
+            return lo;
+            }
 
-    System.out.println("Partition on Array a");
-    System.out.println(partition(a,0,a.length -1));
-    System.out.println(Arrays.toString(a));
-    System.out.println();
-
-    System.out.println("quickSelect on Array a");
-    System.out.println(quickSelect(a,2));
-    System.out.println("Should be 4");
-  }
+            return (lo + hi) / 2;
+        }
 }
