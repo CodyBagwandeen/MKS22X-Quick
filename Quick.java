@@ -1,11 +1,9 @@
+import java.util.Arrays;
 
 
 public class Quick{
 
   public static int partition(int[] data, int start, int end){
-    if(start < 0 || end > data.length){
-      return start;
-    }
     int pivotIndex = (int)(Math.random() * 10000 ) % data.length;
     int pivot = data[pivotIndex];
 
@@ -57,11 +55,19 @@ public class Quick{
     int end = pivot -1;
 
     while(pivot != val){ // if its not at the wanted val, keep going
-      pivot = partition(data, start, end); // partition the array
+      System.out.println("");
+      System.out.println("start : " + start);
+      System.out.println("end : " + end);
+      System.out.println(pivot = partition(data, start, end)); // partition the array
+      System.out.println(Arrays.toString(data));
+      System.out.println("pivot : "+ pivot );
+      System.out.println("val : "+val);
       if(pivot < val){
-        end = pivot -1; // move the end if pivot is less than k
+        System.out.println("the pivot is less than the value");
+        start = pivot +1; // move the start if pivot is less than k
       } else {
-        start = pivot +1; // move the start
+        System.out.println("the pivot is more than the value");
+        end = pivot -1; // move the end
       }
     }
     return data[pivot];
@@ -83,7 +89,19 @@ public class Quick{
   }
 
   public static void main(String[] args){
-    int[] a = {1,4,2,1,2,14,4,1};
-    System.out.println(partition(a,0,0));
+
+    System.out.println("Array a");
+    int[] a = {4,6,1,3,5,8};
+    System.out.println(Arrays.toString(a));
+    System.out.println("");
+
+    System.out.println("Partition on Array a");
+    System.out.println(partition(a,0,a.length -1));
+    System.out.println(Arrays.toString(a));
+    System.out.println();
+
+    System.out.println("quickSelect on Array a");
+    System.out.println(quickSelect(a,2));
+    System.out.println("Should be 4");
   }
 }
